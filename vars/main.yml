@@ -1,0 +1,14 @@
+---
+nginx_version: "1.8.1"
+nginx_reported_version: "nginx version: nginx/{{nginx_version}}"
+nginx_file_tag: "nginx-{{nginx_version}}"  #nginx-1.8.1
+nginx_file_name: "{{nginx_file_tag}}.tar.gz"  #
+nginx_base_url: "http://nginx.org/download"
+nginx_tarball_url: "{{nginx_base_url}}/{{nginx_file_name}}"
+ngnix_install_dir: "/etc/"
+deployer_user: "deployer"
+nginx_user: "nginx"
+redis_stable: "redis-stable"
+redis_tag: "{{redis_stable}}.tar.gz"
+redis_install_dir: "/etc/"
+redis_utils: "/utils"

@@ -1,0 +1,17 @@
+- name: Download Redis
+  get_url: url=http://download.redis.io/releases/{{redis_tag}} dest={{redis_install_dir}}
+- name: Unpack Redis
+  command: tar -xvzf {{redis_tag}} chdir={{redis_install_dir}}
+- name: Make  and make install
+  shell: cd {{redis_install_dir}}{{redis_stable}} ls && make && make install
+  become: yes
+  become_method: sudo
+- name: Change directory {{redis_install_dir}}{{redis_stable}}{{redis_utils}} and install
+  # shell: chdir={{redis_install_dir}}{{redis_stable}}{{redis_utils}} ls && sudo ./install_server.sh
+  copy: src={{redis_install_dir}}{{redis_stable}}{{redis_utils}}/redis_init_script dest=/etc/init.d/redis.conf
+  become: yes
+  become_method: sudo
+# - name: install redis
+#   shell: ./install_server.sh
+#   become: yes
+#   become_method: sudo

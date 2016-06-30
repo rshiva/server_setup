@@ -1,0 +1,27 @@
+- name: Download nginx
+  get_url: url={{nginx_base_url}}/{{nginx_file_name}} dest={{ngnix_install_dir}}
+#unpack nginx
+- name: Unpack nginx
+  command: tar -xvzf {{nginx_file_name}} chdir={{ngnix_install_dir}}
+- name: change directory nginx
+  shell: chdir={{ngnix_install_dir}}{{nginx_file_tag}} ls #chdir=/etc/nginx-1.8.1 
+- name: Compile and install nginx {{ngnix_install_dir}}{{nginx_file_tag}}
+  shell: > 
+    cd {{ngnix_install_dir}}{{nginx_file_tag}} ls 
+    ./configure  --prefix=/opt/nginx --user={{nginx_user}} --group={{nginx_user}} --with-http_ssl_module && 
+    make && 
+    make install
+  sudo: true
+- name: get nginx init script
+  get_url: 
+    url: http://www.linode.com/docs/assets/1139-init-deb.sh
+    dest: /etc/init.d/
+- name: Move init script to etc
+  command: mv /etc/init.d/1139-init-deb.sh /etc/init.d/nginx
+- name: change file mode
+  # file: /etc/init.d/nginx touch=true mode="+x"
+  shell: sudo chmod +x /etc/init.d/nginx
+# - name: update nginx file
+  #file: /usr/sbin/update-rc.d -f nginx defaults
+  #sudo: yes
+

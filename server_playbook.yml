@@ -1,0 +1,56 @@
+---
+- hosts: "{{ server }} "
+  remote_user: root
+  tasks:
+  - name: including default vars
+    include_vars: main.yml
+  - name: test connection
+    ping:
+    remote_user: root
+  - name: Install Redis
+    include: 'tasks/install_redis.yml'
+  - name: Install git
+    apt: name=git state=latest
+    become: yes
+    become_method: sudo
+  - name: Install list of packages
+    apt: name={{item}} state=installed
+    with_items:
+      - libpcre3-dev 
+      - build-essential 
+      - libssl-dev
+  - name: Create nginx group
+    group: name={{nginx_user}} state=present
+  - name: create nginx user
+    user: name={{nginx_user}} comment="nginx user" groups="{{nginx_user}}" 
+  - name: create deployer user
+    user: name={{deployer_user}} comment="Deployer user" groups="sudo,root,{{deployer_user}}"
+    sudo: yes
+  - name: Install fail2ban
+    apt: name=fail2ban state=present
+  - name: Install nginx
+    include: 'tasks/install_nginx.yml'
+  - name: disabled-login password for nginx
+    shell: sudo adduser --system --no-create-home --disabled-login --disabled-password --group nginx
+  - name: start nginx 
+    shell: sudo service nginx start
+  - name: Install postgress
+    apt: name={{ item }} update_cache=true state=installed
+    with_items:
+      - postgresql
+      - postgresql-contrib
+      - libpq-dev
+    sudo: yes
+  - name: Install Imagemagick
+    apt: name=imagemagick state=latest
+    sudo: yes
+  - name: Install git
+    apt: name=git state=latest
+    become_user: yes
+  - name: Install mpapis public key 
+    shell: gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+  - name: Install rvm and ruby
+    shell: curl -sSL https://get.rvm.io | bash -s stable --ruby
+
+# sudo adduser --system --no-create-home --disabled-login --disabled-password --group nginx
+#ansible-playbook -v server_playbook.yml  -u root --extra-vars "server=139.59.236.143"
