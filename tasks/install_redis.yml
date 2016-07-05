@@ -7,7 +7,7 @@
   become: yes
   become_method: sudo
 - name: Change directory {{redis_install_dir}}{{redis_stable}}{{redis_utils}} and install
-  # shell: chdir={{redis_install_dir}}{{redis_stable}}{{redis_utils}} ls && sudo ./install_server.sh
+  shell: chdir={{redis_install_dir}}{{redis_stable}}{{redis_utils}} ls && sudo ./install_server.sh
   copy: src={{redis_install_dir}}{{redis_stable}}{{redis_utils}}/redis_init_script dest=/etc/init.d/redis.conf
   become: yes
   become_method: sudo

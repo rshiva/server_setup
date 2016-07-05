@@ -19,31 +19,36 @@
       - libpcre3-dev 
       - build-essential 
       - libssl-dev
+      - libpcre3
+      - openssl
   - name: Create nginx group
     group: name={{nginx_user}} state=present
-  - name: create nginx user
-    user: name={{nginx_user}} comment="nginx user" groups="{{nginx_user}}" 
+  - name: create nginx user {{nginx_user}}
+    user: name="{{nginx_user}}" comment="nginx user" groups="{{nginx_user}}" 
+  - name: Create {{deployer_user}} group 
+    group: name={{deployer_user}} state=present
   - name: create deployer user
     user: name={{deployer_user}} comment="Deployer user" groups="sudo,root,{{deployer_user}}"
-    sudo: yes
+    become: yes
+    become_method: sudo
   - name: Install fail2ban
     apt: name=fail2ban state=present
-  - name: Install nginx
-    include: 'tasks/install_nginx.yml'
-  - name: disabled-login password for nginx
-    shell: sudo adduser --system --no-create-home --disabled-login --disabled-password --group nginx
-  - name: start nginx 
-    shell: sudo service nginx start
+  # - name: Install nginx
+  #   include: 'tasks/install_nginx.yml'
+  # - name: disabled-login password for nginx
+  #   shell: sudo adduser --system --no-create-home --disabled-login --disabled-password --group nginx
   - name: Install postgress
     apt: name={{ item }} update_cache=true state=installed
     with_items:
       - postgresql
       - postgresql-contrib
       - libpq-dev
-    sudo: yes
+    become: yes
+    become_method: sudo
   - name: Install Imagemagick
     apt: name=imagemagick state=latest
-    sudo: yes
+    become: yes
+    become_method: sudo
   - name: Install git
     apt: name=git state=latest
     become_user: yes
